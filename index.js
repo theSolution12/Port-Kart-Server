@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import express from "express";
 import cors from "cors";
+import { keepAwake } from './cron.js';
 import authRoutes from "./routes/auth.route.js";
 import profileRoutes from "./routes/profile.route.js"
 import cartRoutes from "./routes/cart.route.js"
@@ -46,6 +47,14 @@ app.get("/health", (_req, res) => {
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server is running on port ${PORT}`);
+  // Start keep-alive (cron) if configured. The function is a no-op when no external URL is set.
+  try {
+    keepAwake();
+  } catch (err) {
+    // don't let keep-awake failures crash the server
+    // eslint-disable-next-line no-console
+    console.error('Failed to start keep-awake service:', err?.message || err);
+  }
 });
 
 
